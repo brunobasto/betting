@@ -1,0 +1,86 @@
+0 silly argv {
+0 silly argv   _: [ 'bootstrap' ],
+0 silly argv   lernaVersion: '3.22.1',
+0 silly argv   '$0': '/usr/local/bin/lerna'
+0 silly argv }
+1 notice cli v3.22.1
+2 verbose rootPath /Users/brunobasto/Projects/betting
+3 silly npmConfig {
+3 silly npmConfig   registry: undefined,
+3 silly npmConfig   npmClient: 'npm',
+3 silly npmConfig   npmClientArgs: [],
+3 silly npmConfig   mutex: undefined
+3 silly npmConfig }
+4 info Bootstrapping 3 packages
+5 verbose lifecycle preinstall
+6 silly lifecycle No script for "preinstall" in "betting-scrapper-bet365", continuing
+7 silly lifecycle No script for "preinstall" in "betting-scrapper-betfair", continuing
+8 silly lifecycle No script for "preinstall" in "betting-matcher", continuing
+9 silly hasDependencyInstalled betting-matcher cross-fetch
+10 silly hasDependencyInstalled betting-scrapper-bet365 cross-fetch
+11 silly hasDependencyInstalled betting-scrapper-betfair cross-fetch
+12 silly hasDependencyInstalled betting-matcher currency.js
+13 silly hasDependencyInstalled betting-scrapper-bet365 currency.js
+14 silly hasDependencyInstalled betting-scrapper-betfair currency.js
+15 silly hasDependencyInstalled betting-matcher modern-random-ua
+16 silly hasDependencyInstalled betting-scrapper-bet365 modern-random-ua
+17 silly hasDependencyInstalled betting-scrapper-betfair modern-random-ua
+18 silly hasDependencyInstalled betting-matcher moment
+19 silly hasDependencyInstalled betting-scrapper-bet365 moment
+20 silly hasDependencyInstalled betting-scrapper-betfair moment
+21 silly hasDependencyInstalled betting-matcher puppeteer
+22 silly hasDependencyInstalled betting-scrapper-bet365 puppeteer
+23 silly hasDependencyInstalled betting-scrapper-betfair puppeteer
+24 silly hasDependencyInstalled betting-matcher puppeteer-extra
+25 silly hasDependencyInstalled betting-scrapper-bet365 puppeteer-extra
+26 silly hasDependencyInstalled betting-scrapper-betfair puppeteer-extra
+27 silly hasDependencyInstalled betting-matcher puppeteer-extra-plugin-stealth
+28 silly hasDependencyInstalled betting-scrapper-bet365 puppeteer-extra-plugin-stealth
+29 silly hasDependencyInstalled betting-scrapper-betfair puppeteer-extra-plugin-stealth
+30 silly hasDependencyInstalled betting-matcher yargs
+31 silly hasDependencyInstalled betting-scrapper-bet365 yargs
+32 silly hasDependencyInstalled betting-scrapper-betfair yargs
+33 silly root dependencies {}
+34 silly leaf dependencies {}
+35 info Symlinking packages and binaries
+36 silly createSymlink [
+36 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-scrapper-bet365',
+36 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/betting-scrapper-bet365',
+36 silly createSymlink   'junction'
+36 silly createSymlink ]
+37 silly createSymbolicLink [
+37 silly createSymbolicLink   '../../betting-scrapper-bet365',
+37 silly createSymbolicLink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/betting-scrapper-bet365',
+37 silly createSymbolicLink   'junction'
+37 silly createSymbolicLink ]
+38 silly createSymlink [
+38 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-scrapper-betfair',
+38 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/betting-scrapper-betfair',
+38 silly createSymlink   'junction'
+38 silly createSymlink ]
+39 silly createSymbolicLink [
+39 silly createSymbolicLink   '../../betting-scrapper-betfair',
+39 silly createSymbolicLink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/betting-scrapper-betfair',
+39 silly createSymbolicLink   'junction'
+39 silly createSymbolicLink ]
+40 silly createSymlink [
+40 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-scrapper-bet365/src/cli/cli.js',
+40 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/.bin/crawler-itau',
+40 silly createSymlink   'exec'
+40 silly createSymlink ]
+41 silly createSymlink [
+41 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-scrapper-betfair/src/cli/cli.js',
+41 silly createSymlink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/.bin/crawler-itau',
+41 silly createSymlink   'exec'
+41 silly createSymlink ]
+42 silly createSymbolicLink [
+42 silly createSymbolicLink   '../../../betting-scrapper-bet365/src/cli/cli.js',
+42 silly createSymbolicLink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/.bin/crawler-itau',
+42 silly createSymbolicLink   'file'
+42 silly createSymbolicLink ]
+43 silly createSymbolicLink [
+43 silly createSymbolicLink   '../../../betting-scrapper-betfair/src/cli/cli.js',
+43 silly createSymbolicLink   '/Users/brunobasto/Projects/betting/packages/betting-matcher/node_modules/.bin/crawler-itau',
+43 silly createSymbolicLink   'file'
+43 silly createSymbolicLink ]
+44 error
