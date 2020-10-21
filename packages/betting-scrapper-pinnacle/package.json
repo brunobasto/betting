@@ -1,0 +1,20 @@
+{
+	"name": "betting-scrapper-pinnacle",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.js",
+	"bin": {
+		"betting-scrapper-pinnacle": "./src/cli/cli.js"
+	},
+	"scripts": {
+		"start": "node src/cli/cli.js"
+	},
+	"dependencies": {
+		"betting-scrapper": "^1.0.0",
+		"cross-fetch": "^3.0.2",
+		"moment": "^2.24.0",
+		"yargs": "^13.2.2"
+	},
+	"author": "",
+	"license": "ISC"
+}
