@@ -1,7 +1,7 @@
-const getBetKey = ({backPlayer, layPlayer, date}) => {
-    return `${backPlayer}_${layPlayer}_${date.toISOString()}`;
+const getEventKey = ({backPlayer, layPlayer, date}) => {
+    return `${backPlayer}_${layPlayer}}`;
 }
 
 module.exports = {
-    getBetKey
+    getEventKey
 }

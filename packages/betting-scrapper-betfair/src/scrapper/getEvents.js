@@ -72,7 +72,8 @@ module.exports = async (page) => {
 
 		return {
 			...bet,
-			date: parsedDate.toDate()
+			date: parsedDate.toDate(),
+			entityType: 'exchange'
 		}
 	});
 }

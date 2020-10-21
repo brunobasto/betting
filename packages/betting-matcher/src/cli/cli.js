@@ -1,10 +1,13 @@
 #!/usr/bin/env node
+
 const { Bet365Scrapper } = require('betting-scrapper-bet365');
 const { BetfairScrapper } = require('betting-scrapper-betfair');
-const moment = require('moment');
-const { getBetKey } = require('../utils/keys');
+const { PinnacleScrapper } = require('betting-scrapper-pinnacle');
+
 const { real } = require('../utils/currency');
-const { calculateStakes } = require('../utils/calculus');
+const { calculateStakesWithLayOnExchange } = require('../utils/calculus_exchange');
+const { findMatches } = require('../utils/screener');
+const { calculateStakesBetweenBookmakers } = require('../utils/calculus_bookmaker');
 
 var argv = require('yargs')
 	.usage('Usage: $0 --endpoint')
@@ -21,143 +24,123 @@ const executeScrapper = async (scrapper, name) => {
 			reject(error);
 		});
 
-		scrapper.on('success', async (result) => {
-			console.log(name, 'has', result.length, 'matches');
+		scrapper.on('success', async (events) => {
+			console.log(name, 'has', events.length, 'matches');
 
-			resolve(result);
+			resolve({
+				events,
+				name,
+				scrapper
+			});
 		});
 
 		scrapper.execute();
-	})
-
+	});
 }
 
 (async () => {
 	const betfair = new BetfairScrapper();
 	const bet365 = new Bet365Scrapper();
+	const pinnacle = new PinnacleScrapper();
 
 	try {
-		const [betfairResults, bet365Results] = await Promise.all([
+		const entityEvents = await Promise.all([
+			executeScrapper(bet365, 'bet365'),
 			executeScrapper(betfair, 'betfair'),
-			executeScrapper(bet365, 'bet365')
+			executeScrapper(pinnacle, 'pinnacle'),
 		]);
 
-		const matched = [];
-		const index = {};
-
-		betfairResults.forEach((exchange) => {
-			bet365Results.forEach(bookmaker => {
-				const bookmakerKey = getBetKey(bookmaker);
-				const exchangeKey = getBetKey(exchange);
-
-				// Skip if we already processed it
-				if (index[bookmakerKey] || index[exchangeKey]) {
-					return false;
-				}
-
-				// We're only interested in comparing the same event
-				if (bookmakerKey !== exchangeKey) {
-					return false;
-				}
-
-				const timeDiff = moment(bookmaker.date).diff(moment(exchange.date), 'hours');
-
-				// If time difference between two events is too great, it's probably a different event
-				if (Math.abs(timeDiff) > 2) {
-					return false;
-				}
-
-				// const bestBack = Math.max(bookmaker.backOdds, exchange.backOdds);
-				// const bestLay = Math.max(bookmaker.layOdds, exchange.layOdds);
-
-				// // Ignore flaky resutls within same entity
-				// if (
-				// 	(bestBack === bookmaker.backOdds && bestLay === bookmaker.layOdds) ||
-				// 	(bestBack === exchange.backOdds && bestLay === exchange.layOdds)
-				// ) {
-				// 	return false;
-				// }
-
-				const probability = 1 / bookmaker.backOdds + 1 / exchange.layOdds;
-
-				// We're only interested in profitable opportunities
-				if (probability >= 1) {
-					return false;
-				}
-
-				// Events too far in the future are risky
-				const nowDiff = moment(exchange.date).diff(moment(), 'hours');
-
-				if (nowDiff > 24) {
-					// return false;
-				}
-
-				matched.push({
-					exchange,
-					bookmaker,
-					backPlayer: exchange.backPlayer,
-					layPlayer: exchange.layPlayer,
-					probability: probability,
-					timeToMatch: nowDiff
-				})
-
-				index[bookmakerKey] = true;
-			})
-		})
-
-		matched.sort((a, b) => a.probability - b.probability);
+		const matched = findMatches(entityEvents);
 
 		const commission = 0.05;
-		const desiredROI = 0.03;
-		const maxStake = 200;
-		const exchangeFunds = 100;
-		const bookmakerFunds = 100;
+		const desiredROI = 0.05;
+		const exchangeFunds = 138.67;
+		const bookmakerFunds = 41.36;
+		const maxStake = exchangeFunds + bookmakerFunds;
 
-		const filtered = matched.map((bet) => {
-			const { bookmaker, exchange } = bet;
-			const { layOdds } = exchange;
-			const { backOdds } = bookmaker;
+		const opportunities = [];
 
-			const stakes = calculateStakes({ backOdds, commission, layOdds, maxStake });
+		console.log(`Found ${matched.length} matches`);
 
-			console.log(stakes)
+		matched.forEach((match) => {
+			const { eventA, eventB, probabilityA, probabilityB } = match;
 
-			return {
-				...stakes,
-				...bet
+			// If probabilityA < 1 we should back A and lay B
+			// If probabilityB < we should back B and lay A
+
+			// Analyze a few scenarios:
+			// 1 - eventA and eventB are from bookmakers
+			//   | - Calculate between bookmakers (Dutching) 
+			// 2 - eventA is from a bookmaker and eventB is from an exchange
+			// 3 - eventA is from an exchange and eventB is from a bookmaker
+			// 4 - eventA and eventB are from exchanges
+
+			if (probabilityA < 1) {
+				if (eventA.entityType === 'bookmaker' && eventB.entityType === 'exchange') {
+					const stakes = calculateStakesWithLayOnExchange({ backOdds: eventA.backOdds, commission, layOdds: eventB.layOdds, maxStake });
+
+					opportunities.push({ ...stakes, ...match });
+				}
+				else if (eventA.entityType === 'bookmaker' && eventB.entityType === 'bookmaker') {
+					console.log('A')
+					const stakes = calculateStakesBetweenBookmakers({ backOdds: eventA.backOdds, layOdds: eventB.layOdds, maxStake });
+
+					opportunities.push({ ...stakes, ...match });
+				}
 			}
-		}).filter(
-			({ bookmakerLoss, bookmakerProfit, exchangeLoss, liability }) => {
+
+			if (probabilityB < 1) {
+				if (eventA.entityType === 'exchange' && eventB.entityType === 'bookmaker') {
+					const stakes = calculateStakesWithLayOnExchange({ backOdds: eventB.backOdds, commission, layOdds: eventA.layOdds, maxStake });
+
+					opportunities.push({ ...stakes, ...match });
+				}
+				else if (eventA.entityType === 'bookmaker' && eventB.entityType === 'bookmaker') {
+					console.log('B')
+					const stakes = calculateStakesBetweenBookmakers({ backOdds: eventB.backOdds, layOdds: eventA.layOdds, maxStake });
+
+					opportunities.push({ ...stakes, ...match });
+				}
+			}
+		})
+
+		console.log(`That resulted in ${opportunities.length} opportunities.`);
+		
+		const profitable = opportunities.filter(
+			({ backerLoss, backerProfit, layerLoss, liability, layerProfit }) => {
 				return (
-					true
-					// bookmakerLoss < bookmakerFunds &&
-					// exchangeLoss < exchangeFunds &&
-					// bookmakerProfit/liability > desiredROI
+					// true
+					backerLoss < bookmakerFunds &&
+					backerProfit / liability > desiredROI &&
+					layerLoss < exchangeFunds &&
+					layerProfit / liability > desiredROI
 				)
 			}
 		);
 
-		filtered.forEach(
+		profitable.forEach(
 			({
+				backerAward,
+				backerLoss,
+				backerProfit,
 				backStake,
 				bookmaker,
-				bookmakerAward,
-				bookmakerLoss,
-				bookmakerProfit,
+				bookmakerName,
 				exchange,
-				exchangeAward,
-				exchangeLoss,
-				exchangeProfit,
+				exchangeName,
+				layerAward,
+				layerLoss,
+				layerProfit,
 				layStake,
 				liability,
-				timeToMatch
+				timeToMatch,
 			}) => {
 				const { backPlayer, layPlayer, backOdds } = bookmaker;
 				const { layOdds } = exchange;
 
-				console.log(`============================================`);
-				console.log(`======= ${backPlayer} v ${layPlayer} =======`);
-				console.log(`============================================`);
+				console.log(`======== ${bookmakerName} v ${exchangeName} =======`);
+				console.log(`======= ${backPlayer} v ${layPlayer} ==============`);
+				console.log(`===================================================`);
 
 				console.log('Back Odds', backOdds, 'Back Stake', real(backStake));
 				console.log('Lay Odds', layOdds, 'Lay Stake', real(layStake));
@@ -165,26 +148,27 @@ const executeScrapper = async (scrapper, name) => {
 				console.log(`\nApostei ${real(backStake)} para ${backPlayer} ganhar`);
 				console.log(`Apostei ${real(layStake)} para ${backPlayer} perder`);
 				console.log(`Liability: ${real(liability)}\n`);
-				
+
 
 				console.log(`--- SE ${backPlayer} GANHAR ---`);
-				console.log(`Ganhei no bookmaker: ${real(bookmakerAward)}`);
-				console.log(`Perdi no exchange: ${real(exchangeLoss)}`);
-				console.log(`Lucros ${real(bookmakerProfit)}\n`)
-				console.log(`ROI: ${(bookmakerProfit/liability * 100).toFixed(2)}%\n`);
+				console.log(`Ganhei no bookmaker: ${real(backerAward)}`);
+				console.log(`Perdi no exchange: ${real(layerLoss)}`);
+				console.log(`Lucros ${real(backerProfit)}\n`)
+				console.log(`ROI: ${(backerProfit / liability * 100).toFixed(2)}%\n`);
 
 				console.log(`--- SE ${backPlayer} PERDER ---`);
-				console.log(`Ganhei no exchange: ${real(exchangeAward)}`);
-				console.log(`Perdi no bookmaker: ${real(bookmakerLoss)}`);
-				console.log(`Lucros ${real(exchangeProfit)}\n`);
-				console.log(`ROI: ${(exchangeProfit/liability * 100).toFixed(2)}%\n`);
+				console.log(`Ganhei no exchange: ${real(layerAward)}`);
+				console.log(`Perdi no bookmaker: ${real(backerLoss)}`);
+				console.log(`Lucros ${real(layerProfit)}\n`);
+				console.log(`ROI: ${(layerProfit / liability * 100).toFixed(2)}%\n`);
 
-				console.log(`Average ROI: ${((exchangeProfit/liability + bookmakerProfit/liability) / 2 * 100).toFixed(2)}%\n`);
+				console.log(`Average ROI: ${((layerProfit / liability + backerProfit / liability) / 2 * 100).toFixed(2)}%\n`);
 
 				console.log(`Time to Match: ${timeToMatch}h\n\n`);
 			}
-		)
-		console.log(`Found ${filtered.length} opportunities.`);
+		);
+
+		console.log(`Of which ${profitable.length} are profitable.`);
 
 		process.exit(0);
 	}
