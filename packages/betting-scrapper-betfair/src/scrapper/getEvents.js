@@ -11,7 +11,7 @@ module.exports = async (page) => {
 
 	const numberOfPages = await page.evaluate(async () => {
 		return Promise.resolve(document.querySelectorAll('.coupon-page-navigation__bullets li').length);
-	});
+	}) || 1;
 
 	const bets = [];
 
