@@ -1,0 +1,26 @@
+{
+	"name": "betting-matcher",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"bin": {
+		"betting-matcher": "./src/cli/cli.js"
+	},
+	"scripts": {
+		"start": "node src/cli/cli.js"
+	},
+	"dependencies": {
+		"betting-scrapper-bet365": "^1.0.0",
+		"betting-scrapper-betfair": "^1.0.0",
+		"cross-fetch": "^3.0.2",
+		"currency.js": "^1.2.1",
+		"modern-random-ua": "^1.0.3",
+		"moment": "^2.24.0",
+		"puppeteer": "^5.3.1",
+		"puppeteer-extra": "^3.1.15",
+		"puppeteer-extra-plugin-stealth": "^2.6.2",
+		"yargs": "^13.2.2"
+	},
+	"author": "",
+	"license": "ISC"
+}

@@ -1,0 +1,43 @@
+const backStake = (maxStake * 1/backOdds) / (1/backOdds + 1/layOdds);
+const layStake = (maxStake * 1/layOdds) / (1/backOdds + 1/layOdds) * 0.5;
+
+const bookmakerAward = backStake * (backOdds - 1);
+const exchangeLoss = layStake * (layOdds - 1);
+const bookmakerProfit = bookmakerAward - exchangeLoss;
+
+bookmakerProfit = (backStake * (backOdds - 1)) - (layStake * (layOdds - 1));
+
+const exchangeAward = (layStake * (layOdds - 1 - commission));
+const bookmakerLoss = backStake;
+const exchangeProfit = exchangeAward - bookmakerLoss;
+
+exchangeProfit = (layStake * (layOdds - 1 - commission)) - backStake;
+
+//
+exchangeProfit = (layStake * (layOdds - 1 - commission)) - backStake;
+maxStake = layStake * (1 + commission) + backStake
+
+// Equalization of Profits
+(((maxStake - backStake) / (layOdds - 1)) * (layOdds - 1 - commission)) - backStake = (backStake * (backOdds - 1)) - (((maxStake - backStake) / (layOdds - 1)) * (layOdds - 1))
+
+(((m - x) / (l - 1)) * (l - 1 - c)) - x = (x * (b - 1)) - (((m - x) / (l - 1)) * (l - 1))
+
+x = (m * (c - 2*l + 2)) / (b * (-l) + b + c - 2 * l + 2)
+
+backStake = (maxStake * (commission - 2*layOdds + 2)) / (backOdds * (-layOdds) + backOdds + commission - 2 * layOdds + 2)
+
+// (x * (b - 1)) - (((m - x) / (1 + c)) * (l - 1)) = (((m - x) / (1 + c)) * (l - 1 - c)) - x
+
+backStake = - ((maxStake * (commission - 2 * layOdds + 2)) / (backOdds*commission + backOdds - commission + 2 * layOdds - 2))
+
+backStake = x;
+backOdds = b;
+layOdds = l;
+maxStake = m;
+commission = c;
+
+
+
+maxStake = layStake * (layOdds - 1) + backStake
+maxStake - backStake = layStake * (layOdds - 1)
+layStake = ((maxStake - backStake) / (layOdds - 1))
