@@ -10,7 +10,7 @@
 		"start": "node src/cli/cli.js"
 	},
 	"dependencies": {
-		"betting-scrapper-betfair": "^1.0.0",
+		"betting-scrapper": "^1.0.0",
 		"cross-fetch": "^3.0.2",
 		"moment": "^2.24.0",
 		"yargs": "^13.2.2"
