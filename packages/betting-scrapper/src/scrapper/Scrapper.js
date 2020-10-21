@@ -22,6 +22,10 @@ class Scrapper extends EventEmitter {
 		throw new Error('Not implemented.');
 	}
 
+	getURL() {
+		throw new Error('Not implemented.');
+	}
+
 	async execute() {
 		const browser = await this.createBrowser();
 
@@ -67,7 +71,7 @@ class Scrapper extends EventEmitter {
 			width: 1024 + Math.floor(Math.random() * 100),
     		height: 768 + Math.floor(Math.random() * 100),
 		 });
-		await page.goto('https://www.bet365.com/#/AC/B13/C1/D50/E2/F163/', { waitUntil: 'domcontentloaded', timeout: 0 });
+		await page.goto(this.getURL(), { waitUntil: 'domcontentloaded', timeout: 0 });
 
 		await page.screenshot({ path: '/tmp/initial.png' });
 
