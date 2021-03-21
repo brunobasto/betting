@@ -10,11 +10,10 @@ const puppeteer = require('puppeteer-extra');
 puppeteer.use(require('puppeteer-extra-plugin-stealth')())
 
 const configs = {
-	args: ['--no-sandbox'],
+	args: ['--no-sandbox', '--lang=en-US'],
 	headless: true,
-	ignoreHTTPSErrors: true,
 	timeout: TIMEOUT,
-    devtools: false,
+	devtools: false,
 };
 
 class Scrapper extends EventEmitter {
@@ -63,12 +62,16 @@ class Scrapper extends EventEmitter {
 	async createPage(browser) {
 		const page = await browser.newPage();
 
-		const cookies = await page.cookies('https://www.bet365.com');
+		await page.setExtraHTTPHeaders({
+			'Accept-Language': 'en-US'
+		})
+
+		const cookies = await page.cookies(this.getURL());
 		// And remove them
 		await page.deleteCookie(...cookies);
 
 		await page.setViewport({ 
-			width: 1024 + Math.floor(Math.random() * 100),
+			width: 1375 + Math.floor(Math.random() * 100),
     		height: 768 + Math.floor(Math.random() * 100),
 		 });
 		await page.goto(this.getURL(), { waitUntil: 'domcontentloaded', timeout: 0 });

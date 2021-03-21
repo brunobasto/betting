@@ -1,6 +1,7 @@
 const moment = require('moment');
 
 const { getEventKey } = require('./keys');
+const { haveNameSimilarity, compareAbbreviated } = require('./aliases');
 
 const findMatches = (scrapperResults) => {
     const matched = [];
@@ -21,6 +22,16 @@ const findMatches = (scrapperResults) => {
                         return false;
                     }
 
+                    // Skip invalid events
+                    if (eventA.backOdds === 0 || eventA.layOdds === 0 || eventB.backOdds === 0 || eventB.layOdds === 0) {
+                        return false;
+                    }
+
+                    // We're only interested in comparing against the same sport
+                    if (eventA.sport !== eventB.sport) {
+                        return false;
+                    }
+
                     // We're only interested in events across different entities
                     if (entityNameA === entityNameB) {
                         return false;
@@ -28,21 +39,26 @@ const findMatches = (scrapperResults) => {
 
                     // We're only interested in comparing the same event
                     if (eventKeyA !== eventKeyB) {
-                        return false;
+                        if (
+                            !haveNameSimilarity(eventA.backPlayer, eventB.backPlayer) ||
+                            !haveNameSimilarity(eventA.layPlayer, eventB.layPlayer)
+                        ) {
+                            return false;
+                        }
+
+                        // if (
+                        //     !compareAbbreviated(eventA.backPlayer, eventB.backPlayer) ||
+                        //     !compareAbbreviated(eventA.layPlayer, eventB.layPlayer)
+                        // ) {
+                        //     // console.log(eventA.backPlayer, 'v', eventA.layPlayer, ' \n', eventB.backPlayer, 'v', eventB.layPlayer)
+                        //     return false;
+                        // }
                     }
 
                     const timeDiff = moment(eventA.date).diff(moment(eventB.date), 'hours');
 
                     // If time difference between two events is too great, it's probably a different event
-                    if (Math.abs(timeDiff) > 2) {
-                        // return false;
-                    }
-
-                    const probabilityA = 1 / eventA.backOdds + 1 / eventB.layOdds;
-                    const probabilityB = 1 / eventA.layOdds + 1 / eventB.backOdds;
-
-                    // We're only interested in profitable opportunities
-                    if (probabilityA >= 1 && probabilityB >= 1) {
+                    if (Math.abs(timeDiff) > 4) {
                         return false;
                     }
 
@@ -58,8 +74,6 @@ const findMatches = (scrapperResults) => {
                         eventB,
                         entityNameA,
                         entityNameB,
-                        probabilityA,
-                        probabilityB,
                         timeToMatch: nowDiff
                     })
 

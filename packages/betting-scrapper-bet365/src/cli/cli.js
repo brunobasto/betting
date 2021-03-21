@@ -33,16 +33,16 @@ var argv = require('yargs')
 		const scrapper = new Scrapper();
 
 		// login
-		scrapper.on('start', async () => await send('loginStart'));
+		scrapper.on('start', async () => await send('start'));
 
 		scrapper.on('error', async (error) => {
-			await send('jobFailed', error);
+			await send('error', error);
 
 			process.exit(1);
 		});
 
-		scrapper.on('success', async () => {
-			await send('jobSuccess');
+		scrapper.on('success', async (results) => {
+			await send('success', results);
         });
         
         scrapper.on('close', async () => {

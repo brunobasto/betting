@@ -8,7 +8,7 @@ class PinnacleScrapper extends Scrapper {
 	}
 
 	getURL() {
-		return 'https://www.pinnacle.com/pt/tennis/matchups';
+		return 'https://www.pinnacle.com/en/tennis/matchups';
 	}
 }
 

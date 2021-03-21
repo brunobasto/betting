@@ -1,0 +1,13 @@
+{
+	"name": "betting-database",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.js",
+	"dependencies": {
+		"mongoose": "^5.10.10",
+		"string-similarity": "^4.0.2",
+		"string-similarity-js": "^2.1.2"
+	},
+	"author": "",
+	"license": "ISC"
+}

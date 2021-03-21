@@ -16,8 +16,8 @@ const calculateRoundStakes = ({ backOdds, commission, layOdds, maxStake }) => {
         value: Infinity
     };
 
-    for (let i = 0; i < maxStake; i++) {
-        const backStake = round(i, 1);
+    for (let i = 0; i < maxStake; i+=1) {
+        const backStake = round(i, 5);
         // const layStake = maxStake - backStake;
         const layStake = ((maxStake - backStake) / (layOdds - 1))
 
@@ -60,11 +60,19 @@ const calculateProfits = ({ backOdds, backStake, commission, layOdds, layStake }
     };
 }
 
+const calculateLayStake = ({ backOdds, backStake, commission, layOdds }) => {
+    return (backOdds * backStake) / (layOdds - commission)
+}
+
 const calculateStakesWithLayOnExchange = ({ backOdds, commission, layOdds, maxStake }) => {
-    const { backStake, layStake } = calculateExactStakes({ backOdds, commission, layOdds, maxStake })
-    // const {backStake, layStake} = calculateRoundStakes({ backOdds, commission, layOdds, maxStake })
+    // const { backStake, layStake } = calculateExactStakes({ backOdds, commission, layOdds, maxStake })
+    const { backStake, layStake } = calculateRoundStakes({ backOdds, commission, layOdds, maxStake })
+    // const backStake = 100;
+    // const layStake = calculateLayStake({ backOdds, backStake, commission, layOdds });
 
     const profits = calculateProfits({ backOdds, backStake, commission, layOdds, layStake })
+
+    // console.log(backOdds, layOdds, profits)
 
     return {
         backStake,

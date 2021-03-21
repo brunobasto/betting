@@ -1,6 +1,6 @@
 const calculateExactStakes = ({ backOdds, layOdds, maxStake }) => {
-    const backStake = backStake = (layOdds * maxStake) / (backOdds + layOdds)
-    const layStake = maxStake - layStake;
+    const backStake = (layOdds * maxStake) / (backOdds + layOdds)
+    const layStake = maxStake - backStake;
 
     return { backStake, layStake };
 }
